@@ -12,9 +12,9 @@ Simplicity is the main benefit in this deployment model. All hardware is standar
 
 ## Converged deployments
 
-Converged deployments have separate AzSHCI cluster with Scale-Out File Server role installed. Multiple compute clusters (up to 64 nodes each) can access single Scale-Out File Server. This design allows to use both Datacenter and Standard licenses for Compute Clusters. Also free Hyper-V server can be used for compute hosts.
+Converged deployments have separate AzSHCI cluster with Scale-Out File Server role installed. Multiple compute clusters (up to 64 nodes each) can access single Scale-Out File Server. This design allows to use both Datacenter and Standard licenses for Compute Clusters.
 
-This design adds some complexity as Virtual Machines are accessing its storage over network. Main benefit is, that one VM consuming all CPU cycles will not affect other VMs because of degraded storage performance. This design allows higher density, better deduplication job schedule and decreased east-west traffic (as VMs are pointed to it's CSV owner node using Witness Service or new [SMB Connections move on connect](https://techcommunity.microsoft.com/t5/failover-clustering/scale-out-file-server-improvements-in-windows-server-2019/ba-p/372156)).
+This design adds some complexity as Virtual Machines are accessing its storage over network. Main benefit is, that one VM consuming all CPU cycles will not affect other VMs because of degraded storage performance and also you can scale storage independently from RAM and CPU (if you run out of cpu, no need to buy server loaded with storage). This design allows higher density, better deduplication job schedule and decreased east-west traffic (as VMs are pointed to it's CSV owner node using Witness Service or new [SMB Connections move on connect](https://techcommunity.microsoft.com/t5/failover-clustering/scale-out-file-server-improvements-in-windows-server-2019/ba-p/372156)).
 
 ![](03-Deployment-Models-and-Workloads/media/ConvergedModel01.png)
 
@@ -32,7 +32,14 @@ Azure Stack HCI can also host user profile disks (UPDs). Since UPD is VHD (both 
 
 ## SQL
 
-<TBD>
+There are multiple ways to deploy SQL Server on Azure Stack HCI cluster. But in the end there are two main - Deploying a SQL Server in a Virtual Machine, or in AKS (Azure Kubernetes Service) as SQL Managed instance.
+
+> SQL Performance in Virtual Machine
+
+![](03-Deployment-Models-and-Workloads/media/SQLPerformanceVM.png)
+
+
+
 
 ## Kubernetes
 
