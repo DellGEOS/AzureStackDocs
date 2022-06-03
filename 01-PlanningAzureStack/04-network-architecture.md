@@ -25,7 +25,7 @@ In Windows Server 2016 was support for single subnet multichannel in cluster sup
 
 ![](04-Network-Architecture/media/topology01.png)
 
-TOR Switches will be configured with Trunk and native VLAN for management.
+TOR Switches will be configured with Trunk and native (access) VLAN for management.
 
 ![](04-Network-Architecture/media/topology02.png)
 
@@ -35,13 +35,15 @@ With increased number of nodes, there might be a congestion in TOR switches inte
 
 ![](04-Network-Architecture/media/topology03.png)
 
-TOR Switches will be configured with Trunk and native VLAN for management with one slight difference from single subnet. Each subnet for SMB traffic will have it's own VLAN. This will also help discover improper physical connections (https://youtu.be/JxKMSqnGwKw?t=204).
+TOR Switches will be configured with Trunk and native (access) VLAN for management with one slight difference from single subnet. Each subnet for SMB traffic will have it's own VLAN. This will also help discover disconnected physical connections (https://youtu.be/JxKMSqnGwKw?t=204).
 
 ![](04-Network-Architecture/media/topology04.png)
 
-### Direct connections
+> Note: Two subnet deployment is being now standard. Same approach is used when [NetworkATC](https://docs.microsoft.com/en-us/azure-stack/hci/deploy/network-atc) is deployed. 
 
-In Windows Server 2019 you can connect all nodes in mesh mode. In case you have 2 nodes, it's just one connection. With 3 nodes, it's 3 interconnects. With 5 nodes, it whoops to 10. For 2 or 3 nodes design it makes sense to use 2 connections between 2 nodes in case one link goes down (for example cable failure). This would result traffic going over slower connection (like 1Gb if North-South is using Gigabit network links).
+### Direct connections (Switchless)
+
+In Windows Server 2019 you can connect all nodes in mesh mode. In case you have 2 nodes, it's just one connection. With 3 nodes, it's 3 interconnects. With 5 nodes, it whoops to 10. For 2 or 3 nodes design it makes sense to use 2 connections between 2 nodes in case one link goes down (for example cable failure). This would result traffic going over slower connection (like 1Gb if North-South is using Gigabit network links). Dell supports up to 4 nodes in switchless configuration.
 
 The math is simple. With 5 nodes its 4+3+2+1=10. Each connection requires separate subnet.
 
@@ -62,7 +64,7 @@ Great resources explaining benefit of RDMA:
 - [Blog comparing storage performance with and without RDMA](https://techcommunity.microsoft.com/t5/storage-at-microsoft/to-rdma-or-not-to-rdma-8211-that-is-the-question/ba-p/425982)
 - [RDMA protocol deep dive video](https://channel9.msdn.com/Blogs/Regular-IT-Guy/Behind-the-Scenes-with-Storage-Replica-and-RDMA)
 
-There are multiple favors of RDMA. The most used in Azure Stack HCI are RoCEv2 and iWARP. Infiniband can be used also, but just for SMB traffic (NICs cannot be connected to vSwitch).
+There are multiple favors of RDMA. The most used in Azure Stack HCI are RoCEv2 and iWARP. Infiniband can be used also, but just for SMB traffic (NICs cannot be connected to vSwitch). 
 
 ![](04-Network-Architecture/media/RDMA01.png)
 
@@ -86,7 +88,9 @@ If Congestion control mechanisms are not correctly implemented, it can lead to h
 
 ### Converged Design
 
-This design is most common as it is simplest and requires just two ports. Since RDMA can be enabled on vNICs. In the example below is one VLAN used for SMB vNICs. As mentioned in above text, you may consider using two VLANs and two subnets for SMB vNICs to control traffic flow.
+This design is most common as it is simplest and requires just two ports. Since RDMA can be enabled on vNICs. In the example below is one VLAN used for SMB vNICs. As mentioned in above text, you may consider using two VLANs and two subnets for SMB vNICs to control traffic flow as it is becoming standard.
+
+Converged design also makes best use of capacity (let's say you have 4x25Gbps NICs), you can then use up to 100Gbps capacity for storage or Virtual Machines, while using latest technology such as [VMMQ](https://docs.microsoft.com/en-us/windows-hardware/drivers/network/overview-of-virtual-machine-multiple-queues).
 
 ![](04-Network-Architecture/media/topology04.png)
 
@@ -101,3 +105,11 @@ Some customers prefer to dedicate physical network adapters for east west traffi
 Some customers even prefer to have dedicated network cards (ports) for management. One of the reason can be customers requirements to have dedicated physical switches for management.
 
 ![](04-Network-Architecture/media/topology06.png)
+
+## Network adapters hardware
+
+Network adapters that support all modern features such as VMMQ or SDN offloading are in Hardware Compatibility list listed as **Software-Defined Data Center (SDDC) Premium** Additional Qualifier. For more information about Hardware Certification for Azure Stack HCI you can read this 2 part blog - 
+[part1](https://blogs.technet.microsoft.com/windowsserver/2018/02/20/the-technical-value-of-wssd-validated-hci-solutions-part-1/), [part2](https://blogs.technet.microsoft.com/windowsserver/2018/02/21/the-technical-value-of-validated-hci-solutions-part-2/).
+
+![](04-Network-Architecture/media/SDDC01.png)
+

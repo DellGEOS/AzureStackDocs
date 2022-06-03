@@ -34,12 +34,9 @@ Azure Stack HCI can also host user profile disks (UPDs). Since UPD is VHD (both 
 
 There are multiple ways to deploy SQL Server on Azure Stack HCI cluster. But in the end there are two main - Deploying a SQL Server in a Virtual Machine, or in AKS (Azure Kubernetes Service) as SQL Managed instance.
 
-> SQL Performance in Virtual Machine
+> SQL Performance in one Virtual Machine (out of 40 on 4 node cluster) running SQL workload (database forced to read from disk)
 
 ![](03-Deployment-Models-and-Workloads/media/SQLPerformanceVM.png)
-
-
-
 
 ## Kubernetes
 
