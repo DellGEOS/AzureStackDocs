@@ -28,7 +28,7 @@ Network Cards are coming in speeds ranging from 1Gbps to 200Gbps. While hypercon
 |:--------------|:-----------------------|
 |SSD as cache or SSD all-flash  | 2×10 Gbps or 2x25Gbps |
 |NVMe as cache  | 2-4×25Gbps or 2×100Gbps |
-|NVMe all-flash | 4×25Gbps or 2×100Gbps |
+|NVMe all-flash | 2-4×25Gbps or 2×100Gbps |
 |Optane as cache| 2-4×100 Gbps or 2×200Gbps |
 
 ### Use of RDMA
@@ -50,6 +50,12 @@ Reliable, low latency infrastructure is a must for reliable function of Converge
 | 4 | 6 |
 | 5 | 10 |
 
+>Note: Dell supports up to 4 nodes in switchless configuration
+
 ## Hardware certification programme
 
 It is very important to follow validated hardware path. This way you can avoid ghost hunting when single component will misbehave due to firmware or even hardware not being able to handle load under high pressure. There is very good blog summarizing importance of validated hardware [part1](https://cloudblogs.microsoft.com/windowsserver/2018/02/20/the-technical-value-of-wssd-validated-hci-solutions-part-1/) [part2](https://cloudblogs.microsoft.com/windowsserver/2018/02/21/the-technical-value-of-validated-hci-solutions-part-2/). Validated solutions are available in [Azure Stack HCI Catalog](https://www.microsoft.com/en-us/cloud-platform/azure-stack-hci-catalog). For Azure Stack HCI you can also consider [Integrated System](https://hcicatalog.azurewebsites.net/#/?IntegratedSystem=Integrated+System) which includes the Azure Stack HCI operating system pre-installed as well as partner extensions for driver and firmware updates.
+
+>Note: Dell sells only Integrated Systems as Microsoft highly recommend those over just verified solutions.
+
+![](06-Hardware/media/PPT01.png)
