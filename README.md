@@ -11,4 +11,5 @@ These documents are written from Sys-Admin point of view and it often goes prett
     - [Network architecture](./01-PlanningAzureStack/04-network-architecture.md)
     - [Storage and capacity planning](./01-PlanningAzureStack/05-storage-capacity-planning.md)
     - [Hardware](./01-PlanningAzureStack/06-hardware.md)
-
+- [Storage Stack](./02-StorageStack/readme.md)
+ 
