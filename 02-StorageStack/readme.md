@@ -19,6 +19,8 @@ Anyway, let's explore layers a bit
 
 ### Port & Miniport driver
 
+storport.sys & stornvme.sys
+
 Port drivers implement the processing of an I/O request specific to a type of I/O port, such as SATA, and are implemented as kernel-mode libraries of functions rather than actual device drivers. Port driver is written by Microsoft (storport.sys). If third party wants to use write their own device driver (like HBA), then it will use miniport driver (except if device is NVMe, then miniport driver is Microsoft stornvme.sys)
 
 Miniport drivers usually use storport.sys performance enhancements such as support for the paralell execution of IO.
@@ -27,6 +29,8 @@ Miniport drivers usually use storport.sys performance enhancements such as suppo
 [storage miniport drivers](https://docs.microsoft.com/en-us/windows-hardware/drivers/storage/storage-miniport-drivers)
 
 ### Class Driver
+
+disk.sys
 
 A [storage class driver](https://docs.microsoft.com/en-us/windows-hardware/drivers/storage/introduction-to-storage-class-drivers) (typically disk.sys) uses the well-established SCSI class/port interface to control a mass storage device of its type on any bus for which the system supplies a storage port driver (currently SCSI, IDE, USB and IEEE 1394). The particular bus to which a storage device is connected is transparent to the storage class driver.
 
@@ -37,6 +41,8 @@ In Storage Spaces stack (Virtual Disk) disk.sys is responsible for claiming Virt
 ![](./media/StorageStack03.png)
 
 ### Partition Manager
+
+partmgr.sys
 
 Partitions are handled by partmgr.sys. Partition is usually GPT or MBR (preferably GPT as MBR has many limitations such as 2TB size limit)
 
@@ -52,7 +58,9 @@ On the picture below you can see individual physical disk from spaces exposed an
 
 ### Storage Bus Layer
 
-clusport.sys and clusblft.sys. These two drivers (client/server) are exposing all physical disk to each cluster node, so it looks like all physical disks from every cluster node are connected to each server. For interconnect is SMB used, therefore high-speed RDMA can be used (recommended).
+clusport.sys and clusblft.sys
+
+These two drivers (client/server) are exposing all physical disk to each cluster node, so it looks like all physical disks from every cluster node are connected to each server. For interconnect is SMB used, therefore high-speed RDMA can be used (recommended).
 
 It also contains SBL cache.
 
@@ -76,8 +84,37 @@ disk.sys is now used by storage spaces and exposes virtual disk that was provisi
 
 ### Volume Manager
 
+dmio.sys, volmgr.sys
+
+Volumes are created on top of the partition and on volumes you can then create filesystems and expose it to the components higher in the stack.
+
+![](./media/StorageStack08.png)
+
+
 ### Volume Snapshot
+
+volsnap.sys
+
+Volsnap is the component that creates system provider for the volume [shadow copy service (VSS)](https://docs.microsoft.com/en-us/windows-server/storage/file-server/volume-shadow-copy-service). This service is controller by vssadmin.exe
 
 ### Bitlocker
 
+fvevol.sys
+
+Bitlocker is well known disk encryption software that is on the market since Windows Vista. In PowerShell you can expose volume status with Get-BitlockerVolume command. 
+
+![](./media/StorageStack09.png)
+
 ### Filter Drivers
+
+Interesting about filter drivers is, that all FileSystem drivers are actually filter drivers - special ones, File System Drivers - like REFS.sys, NTFS.sys, Exfat.sys ... 
+
+You can learn more about filesystem using fsutil
+
+![](./media/StorageStack10.png)
+
+There are also many first party and third party filter drivers. You can expose those with fltmc command
+
+![](./media/StorageStack11.png)
+
+As you can see on above example, there are many filters like Cluster Shared Volume (CsvNSFlt, CsvFLT), deduplication (Dedup), shared vhd (svhdxflt), storage QoS (storqosflt) and many more. Each filter driver has defined altitude and 3rd parties can (reserve theirs)[https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/allocated-altitudes]
