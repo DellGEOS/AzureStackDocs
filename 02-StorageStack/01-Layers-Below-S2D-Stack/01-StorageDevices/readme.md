@@ -29,6 +29,7 @@ NVMe vs SATA
 * https://nvmexpress.org/wp-content/uploads/NVMe_Infrastructure_final1.pdf
 * https://www.storagereview.com/review/dell-emc-poweredge-r750-hands-on
 * https://dl.dell.com/manuals/common/dellemc-nvme-io-topologies-poweredge.pdf
+* https://www.servethehome.com/dell-emc-poweredge-r7525-review-flagship-dell-dual-socket-server-amd-epyc/
 
 ## Interfaces
 
@@ -49,6 +50,10 @@ NVMe drives are mapped directly to CPU
 ![](./media/NVMeDriveMapping.png)
 * Source: https://dl.dell.com/manuals/common/dellemc-nvme-io-topologies-poweredge.pdf
 
+NVMe backplane connection - Example AX7525 - 16 PCIe Gen4 lanes in each connection (8 are used), 12 connections in backplane, in this case no PCIe switches.
+
+![](./media/AX7525Backplane.png)
+* Source: https://www.servethehome.com/dell-emc-poweredge-r7525-review-flagship-dell-dual-socket-server-amd-epyc/dell-emc-poweredge-r7525-internal-view-24x-nvme-backplane-and-fans/
 
 ## Storage Protocol
 
@@ -60,17 +65,21 @@ For 1M IOPS, NVMe has more than [50% less latency with less than 50% CPU Cycles 
 
 ## Storage Configurations
 
+(slowest to fastest)
+
 * Hybrid (HDD+SSD)
 * All Flash (All SSD)
-* All-NVMe
 * NVMe+HDD
+* All-NVMe
 
-When combining multiple media types, faster media will be used as caching. While it is recommended to use 10% of the capacity for cache, it should be noted, that it is just important to not spill the cache with the production workload, as it will dramatically reduce performance
+When combining multiple media types, faster media will be used as caching. While it is recommended to use 10% of the capacity for cache, it should be noted, that it is just important to not spill the cache with the production workload, as it will dramatically reduce performance. Therefore all production workload should fit into the Storage Bus Layer Cache (cache devices). The sweet spot is combination of fast NVMe (Mixed Use or Write Intensive) with HDDs.
 
 ![](./media/CachePerfDrop.png)
 * Source: https://web.archive.org/web/20160817193242/http://itpeernetwork.intel.com/iops-performance-nvme-hdd-configuration-windows-server-2016-storage-spaces-direct/
 
 ## Exploring Stack with PowerShell
+
+<TBD>
 
 ## Performance results
 
