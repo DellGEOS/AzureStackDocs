@@ -1,6 +1,6 @@
 # Storage Stack Overview
 
-Understanding Storage Stack is crucial for understanding what technologies are involved and how. Understanding how layers are stacked will help when IO flow is troubleshooted - like reviewing performance counters or troubleshooting core functionality.
+Understanding Storage Stack is crucial for understanding what technologies are involved and how (where storage replica is, where is ReFS Multi-resilient Volume, ...). Understanding how layers are stacked will also help when IO flow is troubleshooted - like reviewing performance counters or troubleshooting core functionality.
 
 Traditional stack compared to storage spaces stack (note that MPIO is missing, but for Storage Spaces Direct it's not needed as there is only one path to the physical device, so it was omitted)
 
@@ -13,7 +13,7 @@ To better understand what's in the stack, you can also explore some parts with P
 ![](./media/StorageStack02.png)
 
 
-Anyway, let's explore layers a bit
+Anyway, let's explore layers a bit. Following info is based on storage description someone somewhere created and pushed to internet. The only version I found was from webarchive and I copied it here ![](./media/Storage.pdf)
 
 ## Layers below S2D Stack
 
