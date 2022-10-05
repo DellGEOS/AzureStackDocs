@@ -4,7 +4,7 @@ This documentation is written as an addition to [official documentation]()(https
 
 These documents are written from Sys-Admin point of view and it often goes pretty deep. In case you have any feedback, don't to hesitate to create an issue in GitHub or just contact me directly at jaromir.kaspar@dell.com or twitter [@jaromirkaspar](https://twitter.com/jaromirkaspar)
 
-- [Planning Azure Stack](./01-PlanningAzureStack)
+- Planning Azure Stack
     - [Operating System](./01-PlanningAzureStack/01-operating-system.md)
     - [Supporting Infrastructure](./01-PlanningAzureStack/02-supporting-infrastructure.md)
     - [Deployment models and workloads](./01-PlanningAzureStack/03-deployment-models-and-workloads.md)
@@ -12,4 +12,7 @@ These documents are written from Sys-Admin point of view and it often goes prett
     - [Storage and capacity planning](./01-PlanningAzureStack/05-storage-capacity-planning.md)
     - [Hardware](./01-PlanningAzureStack/06-hardware.md)
 - [Storage Stack](./02-StorageStack/readme.md)
- 
+    - Layers below S2D stack
+        - [Storage Devices](/02-StorageStack/01-Layers-Below-S2D-Stack/01-StorageDevices/readme.md)
+        - [Partition Manager](/02-StorageStack/01-Layers-Below-S2D-Stack/02-PartitionManager/readme.md)
+    - S2D stack layer
