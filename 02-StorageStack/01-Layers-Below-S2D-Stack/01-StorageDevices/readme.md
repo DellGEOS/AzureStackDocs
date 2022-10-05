@@ -1,5 +1,19 @@
 # Storage Devices
 
+<!-- TOC -->
+
+- [Storage Devices](#storage-devices)
+    - [Resources](#resources)
+    - [Interfaces](#interfaces)
+    - [Storage Protocol](#storage-protocol)
+    - [Storage Configurations](#storage-configurations)
+    - [Exploring Stack with PowerShell](#exploring-stack-with-powershell)
+    - [Performance results](#performance-results)
+
+<!-- /TOC -->
+
+![](./media/Stack-PhysicalDisks.png)
+
 ## Resources
 
 Microsoft Documentation
@@ -16,12 +30,7 @@ NVMe vs SATA
 * https://www.storagereview.com/review/dell-emc-poweredge-r750-hands-on
 * https://dl.dell.com/manuals/common/dellemc-nvme-io-topologies-poweredge.pdf
 
-## Storage Devices
-
-![](./media/Stack-PhysicalDisks.png)
-
-
-### Interfaces
+## Interfaces
 
 While SATA is still well performing for most of the customers (see performance results), NVMe offers benefit of higher capacity and also more effective protocol (AHCI vs NVMe), that was developed specifically for SSDs (opposite to AHCI, that was developed for spinning media). SATA/SAS is however not scaling well with the larger disks.
 
@@ -41,7 +50,7 @@ NVMe drives are mapped directly to CPU
 * Source: https://dl.dell.com/manuals/common/dellemc-nvme-io-topologies-poweredge.pdf
 
 
-### Storage Protocol
+## Storage Protocol
 
 SSDs were originally created to replace conventional rotating media. As such they were designed to connect to the same bus types as HDDs, both SATA and SAS (Serial ATA and Serial Attached SCSI).
 
@@ -49,7 +58,7 @@ However, this imposed speed limitations on the SSDs.  Now a new type of SSD exis
 
 For 1M IOPS, NVMe has more than [50% less latency with less than 50% CPU Cycles used](https://www.nvmexpress.org/wp-content/uploads/2013/04/IDF-2012-NVM-Express-and-the-PCI-Express-SSD-Revolution.pdf). It is due to [improved protocol](https://en.wikipedia.org/wiki/NVM_Express#Comparison_with_AHCI) (AHCI vs NVMe)
 
-### Storage Configurations
+## Storage Configurations
 
 * Hybrid (HDD+SSD)
 * All Flash (All SSD)
@@ -61,9 +70,9 @@ When combining multiple media types, faster media will be used as caching. While
 ![](./media/CachePerfDrop.png)
 * Source: https://web.archive.org/web/20160817193242/http://itpeernetwork.intel.com/iops-performance-nvme-hdd-configuration-windows-server-2016-storage-spaces-direct/
 
-### Exploring Stack with PowerShell
+## Exploring Stack with PowerShell
 
-### Performance results
+## Performance results
 
 From the results below you can see that SATA vs SAS vs NVMe is 590092 vs 738507 vs 1496373 4k 100% read IOPS.
 
