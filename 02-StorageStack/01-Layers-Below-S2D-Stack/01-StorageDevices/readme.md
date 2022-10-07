@@ -7,6 +7,7 @@
     - [Interfaces](#interfaces)
     - [Storage Protocol](#storage-protocol)
     - [Storage Configurations](#storage-configurations)
+    - [OS Disks](#os-disks)
     - [Exploring Stack with PowerShell](#exploring-stack-with-powershell)
     - [Performance results](#performance-results)
 
@@ -72,10 +73,20 @@ For 1M IOPS, NVMe has more than [50% less latency with less than 50% CPU Cycles 
 * NVMe+HDD
 * All-NVMe
 
-When combining multiple media types, faster media will be used as caching. While it is recommended to use 10% of the capacity for cache, it should be noted, that it is just important to not spill the cache with the production workload, as it will dramatically reduce performance. Therefore all production workload should fit into the Storage Bus Layer Cache (cache devices). The sweet spot is combination of fast NVMe (Mixed Use or Write Intensive) with HDDs.
+When combining multiple media types, faster media will be used as caching. While it is recommended to use 10% of the capacity for cache, it should be noted, that it is just important to not spill the cache with the production workload, as it will dramatically reduce performance. Therefore all production workload should fit into the Storage Bus Layer Cache (cache devices). The sweet spot (price vs performance) is combination of fast NVMe (mixed use or write intensive) with HDDs. For performance intensive workloads it's recommended to use all-flash solutions as caching introduces ~20% overhead + less predicable behavior (data can be already destaged...), therefore it is recommended to use All-Flash for SQL workloads.
+
+Performance drop when spilling cache devices:
 
 ![](./media/CachePerfDrop.png)
 * Source: https://web.archive.org/web/20160817193242/http://itpeernetwork.intel.com/iops-performance-nvme-hdd-configuration-windows-server-2016-storage-spaces-direct/
+
+## OS Disks
+
+In Dell Servers are BOSS (Boot Optimized Storage Solution) cards used. In essence it card wih 2x m2 2280 NVMe disks connected to PCI-e with configurable non-RAID/RAID 1
+
+![](./media/AX750BOSS01.png)
+
+![](./media/AX750BOSS02.png)
 
 ## Exploring Stack with PowerShell
 
@@ -83,7 +94,7 @@ When combining multiple media types, faster media will be used as caching. While
 
 ## Performance results
 
-From the results below you can see that SATA vs SAS vs NVMe is 590092 vs 738507 vs 1496373 4k 100% read IOPS.
+From the results below you can see that SATA vs SAS vs NVMe is 590092 vs 738507 vs 1496373 4k 100% read IOPS. All measurements were done with VMFleet 2.0 https://github.com/DellGEOS/AzureStackHOLs/tree/main/lab-guides/05-TestPerformanceWithVMFleet
 
 The difference between SAS and SATA is also 8 vs 4 disks in each node. The difference between SAS and NVMe is more than double.
 
