@@ -8,7 +8,10 @@
     - [Storage Protocol](#storage-protocol)
     - [Storage Configurations](#storage-configurations)
     - [OS Disks](#os-disks)
+    - [Consumer-Grade SSDs](#consumer-grade-ssds)
     - [Exploring Stack with PowerShell](#exploring-stack-with-powershell)
+        - [Get-PhysicalDisk](#get-physicaldisk)
+        - [Storage Reliability Counter](#storage-reliability-counter)
     - [Performance results](#performance-results)
 
 <!-- /TOC -->
@@ -88,9 +91,52 @@ In Dell Servers are BOSS (Boot Optimized Storage Solution) cards used. In essenc
 
 ![](./media/AX750BOSS02.png)
 
+## Consumer-Grade SSDs
+
+You should avoid any consumer grade SSDs as consumer grade SSDs might contain NAND with higher latency (therefore there can be performance drop after spilling FTL buffer) or because consumer grade SSDs are not power protected (PLP). You can learn more about why consumer-grade SSDs are not good idea in a [blog post](https://techcommunity.microsoft.com/t5/storage-at-microsoft/don-t-do-it-consumer-grade-solid-state-drives-ssd-in-storage/ba-p/425914). Consumer-grade SSDs do also have lower DWPD (Disk Written Per Day). You can learn about DWPD in [this blogpost](https://blogs.technet.microsoft.com/filecab/2017/08/11/understanding-dwpd-tbw/)
+
 ## Exploring Stack with PowerShell
 
-<TBD>
+### Get-PhysicalDisk
+
+```PowerShell
+$Server="axnode1"
+Get-PhysicalDisk -CimSession $Server | Format-Table FriendlyName,Manufacturer,Model,SerialNumber,MediaType,BusType,SpindleSpeed,LogicalSectorSize,PhysicalSectorSize
+ 
+```
+
+![](./media/PowerShell01.png)
+
+From screenshot you can see, that AX640 BOSS card reports as SATA device with Unspecified Mediatype, while SAS disks are reported as SSDs, with SAS BusType. Let's deep dive into BusType/MediaType a little bit (see table below)
+
+![](./media/BusType.png)
+
+Storage Spaces requires BusType SATA/SAS/NVMe or SCM. BusType RAID is unsupported.
+
+You can also see Logical Sector Size and Physical Sector size. This refers to Drive Type (4K native vs 512E vs 512).
+
+"LogicalSectorSize" value|"PhysicalSectorSize" value         |Drive type
+:----:                   |:----:                             |:----:
+4096                     |4096                               |4K native
+512                      |4096                               |Advanced Format (also known as 512E)
+512                      |512                                |512-byte native
+
+Reference
+* https://learn.microsoft.com/en-US/troubleshoot/windows-server/backup-and-storage/support-policy-4k-sector-hard-drives
+* https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/hh147334(v=ws.10)?redirectedfrom=MSDN
+
+
+### Storage Reliability Counter
+
+Once disk is added to storage spaces, S.M.A.R.T. attributes can be filtered out. For reading disk status (such as wear level temperatures...) can be get-storagereliability counter used. 
+
+```PowerShell
+$Server="axnode1"
+Get-PhysicalDisk -CimSession $Server | Get-StorageReliabilityCounter -CimSession $Server | Format-Table DeviceID,Wear,Temperature*,PowerOnHours,ManufactureDate,ReadLatencyMax,WriteLatencyMax,PSComputerName
+ 
+```
+
+![](./media/PowerShell02.png)
 
 ## Performance results
 
