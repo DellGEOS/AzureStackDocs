@@ -7,7 +7,11 @@
     - [Interfaces](#interfaces)
     - [Storage Protocol](#storage-protocol)
     - [Storage Configurations](#storage-configurations)
+    - [OS Disks](#os-disks)
+    - [Consumer-Grade SSDs](#consumer-grade-ssds)
     - [Exploring Stack with PowerShell](#exploring-stack-with-powershell)
+        - [Get-PhysicalDisk](#get-physicaldisk)
+        - [Storage Reliability Counter](#storage-reliability-counter)
     - [Performance results](#performance-results)
 
 <!-- /TOC -->
@@ -72,18 +76,71 @@ For 1M IOPS, NVMe has more than [50% less latency with less than 50% CPU Cycles 
 * NVMe+HDD
 * All-NVMe
 
-When combining multiple media types, faster media will be used as caching. While it is recommended to use 10% of the capacity for cache, it should be noted, that it is just important to not spill the cache with the production workload, as it will dramatically reduce performance. Therefore all production workload should fit into the Storage Bus Layer Cache (cache devices). The sweet spot is combination of fast NVMe (Mixed Use or Write Intensive) with HDDs.
+When combining multiple media types, faster media will be used as caching. While it is recommended to use 10% of the capacity for cache, it should be noted, that it is just important to not spill the cache with the production workload, as it will dramatically reduce performance. Therefore all production workload should fit into the Storage Bus Layer Cache (cache devices). The sweet spot (price vs performance) is combination of fast NVMe (mixed use or write intensive) with HDDs. For performance intensive workloads it's recommended to use all-flash solutions as caching introduces ~20% overhead + less predicable behavior (data can be already destaged...), therefore it is recommended to use All-Flash for SQL workloads.
+
+Performance drop when spilling cache devices:
 
 ![](./media/CachePerfDrop.png)
 * Source: https://web.archive.org/web/20160817193242/http://itpeernetwork.intel.com/iops-performance-nvme-hdd-configuration-windows-server-2016-storage-spaces-direct/
 
+## OS Disks
+
+In Dell Servers are BOSS (Boot Optimized Storage Solution) cards used. In essence it card wih 2x m2 2280 NVMe disks connected to PCI-e with configurable non-RAID/RAID 1
+
+![](./media/AX750BOSS01.png)
+
+![](./media/AX750BOSS02.png)
+
+## Consumer-Grade SSDs
+
+You should avoid any consumer grade SSDs as consumer grade SSDs might contain NAND with higher latency (therefore there can be performance drop after spilling FTL buffer) or because consumer grade SSDs are not power protected (PLP). You can learn more about why consumer-grade SSDs are not good idea in a [blog post](https://techcommunity.microsoft.com/t5/storage-at-microsoft/don-t-do-it-consumer-grade-solid-state-drives-ssd-in-storage/ba-p/425914). Consumer-grade SSDs do also have lower DWPD (Disk Written Per Day). You can learn about DWPD in [this blogpost](https://blogs.technet.microsoft.com/filecab/2017/08/11/understanding-dwpd-tbw/)
+
 ## Exploring Stack with PowerShell
 
-<TBD>
+### Get-PhysicalDisk
+
+```PowerShell
+$Server="axnode1"
+Get-PhysicalDisk -CimSession $Server | Format-Table FriendlyName,Manufacturer,Model,SerialNumber,MediaType,BusType,SpindleSpeed,LogicalSectorSize,PhysicalSectorSize
+ 
+```
+
+![](./media/PowerShell01.png)
+
+From screenshot you can see, that AX640 BOSS card reports as SATA device with Unspecified Mediatype, while SAS disks are reported as SSDs, with SAS BusType. Let's deep dive into BusType/MediaType a little bit (see table below)
+
+![](./media/BusType.png)
+
+Storage Spaces requires BusType SATA/SAS/NVMe or SCM. BusType RAID is unsupported.
+
+You can also see Logical Sector Size and Physical Sector size. This refers to Drive Type (4K native vs 512E vs 512).
+
+"LogicalSectorSize" value|"PhysicalSectorSize" value         |Drive type
+:----:                   |:----:                             |:----:
+4096                     |4096                               |4K native
+512                      |4096                               |Advanced Format (also known as 512E)
+512                      |512                                |512-byte native
+
+Reference
+* https://learn.microsoft.com/en-US/troubleshoot/windows-server/backup-and-storage/support-policy-4k-sector-hard-drives
+* https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/hh147334(v=ws.10)?redirectedfrom=MSDN
+
+
+### Storage Reliability Counter
+
+Once disk is added to storage spaces, S.M.A.R.T. attributes can be filtered out. For reading disk status (such as wear level temperatures...) can be get-storagereliability counter used. 
+
+```PowerShell
+$Server="axnode1"
+Get-PhysicalDisk -CimSession $Server | Get-StorageReliabilityCounter -CimSession $Server | Format-Table DeviceID,Wear,Temperature*,PowerOnHours,ManufactureDate,ReadLatencyMax,WriteLatencyMax,PSComputerName
+ 
+```
+
+![](./media/PowerShell02.png)
 
 ## Performance results
 
-From the results below you can see that SATA vs SAS vs NVMe is 590092 vs 738507 vs 1496373 4k 100% read IOPS.
+From the results below you can see that SATA vs SAS vs NVMe is 590092 vs 738507 vs 1496373 4k 100% read IOPS. All measurements were done with VMFleet 2.0 https://github.com/DellGEOS/AzureStackHOLs/tree/main/lab-guides/05-TestPerformanceWithVMFleet
 
 The difference between SAS and SATA is also 8 vs 4 disks in each node. The difference between SAS and NVMe is more than double.
 
