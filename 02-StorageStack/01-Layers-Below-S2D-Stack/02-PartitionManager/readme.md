@@ -1,5 +1,16 @@
 # Partition Manager
 
+<!-- TOC -->
+
+- [Partition Manager](#partition-manager)
+    - [Introduction](#introduction)
+    - [PowerShell walkthrough](#powershell-walkthrough)
+    - [Exploring Storage Spaces just storage spaces, not storage spaces direct with PowerShell](#exploring-storage-spaces-just-storage-spaces-not-storage-spaces-direct-with-powershell)
+
+<!-- /TOC -->
+
+![](./media/stack-partitionmanager.png)
+
 ## Introduction
 
 Partition manager has several responsibilities:
@@ -13,6 +24,18 @@ Partition manager has several responsibilities:
 
 * Initializes disk (GPT/MBR partitioning style)
 
+## Resources
+
+Microsoft Documentation
+
+* https://learn.microsoft.com/en-us/windows-hardware/drivers/storage/msft-disk
+
+
+Other
+
+* https://en.wikipedia.org/wiki/Master_boot_record
+* https://en.wikipedia.org/wiki/GUID_Partition_Table
+
 
 ## PowerShell walkthrough
 
@@ -25,9 +48,9 @@ Get-PhysicalDisk | Get-Disk
 
 ![](./media/powershell01.png)
 
-As you can see, you can first query physical disks, and from physical disks you can query Disk. It shares the number, and several properties such as number, size...
+As you can see, you can first query physical disks, and from physical disks you can query Disk. It shares the number, and several other properties such as SerialNumber, Size...
 
-What you can see from Get-Disk is operational status. In Windows Server is [SAN Policy](https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-partitionmanager-sanpolicy) configured to mount all disks except those on a shared bus. Therefore disks are not mounted by default. 
+What you can see from Get-Disk is operational status. In Windows Server is [SAN Policy](https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-partitionmanager-sanpolicy) configured to mount all disks except those on a shared bus. Therefore disks are not mounted by default (configurable by running Set-StorageSetting)
 
 First thing you might want to do to be able to use disk in windows subsystem is to initialize it
 

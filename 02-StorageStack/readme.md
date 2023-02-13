@@ -1,5 +1,26 @@
 # Storage Stack Overview
 
+<!-- TOC -->
+
+- [Storage Stack Overview](#storage-stack-overview)
+    - [Layers below S2D Stack](#layers-below-s2d-stack)
+        - [Port & Miniport driver](#port--miniport-driver)
+        - [Class Driver](#class-driver)
+        - [Partition Manager](#partition-manager)
+    - [S2D Stack](#s2d-stack)
+        - [Storage Bus Layer](#storage-bus-layer)
+        - [Spaceport](#spaceport)
+        - [Virtual Disk](#virtual-disk)
+    - [Layers above S2D Stack](#layers-above-s2d-stack)
+        - [Volume Manager](#volume-manager)
+        - [Volume Snapshot](#volume-snapshot)
+        - [Bitlocker](#bitlocker)
+        - [Filter Drivers](#filter-drivers)
+
+<!-- /TOC -->
+
+## Introduction 
+
 Understanding Storage Stack is crucial for understanding what technologies are involved and how (where storage replica is, where is ReFS Multi-resilient Volume, ...). Understanding how layers are stacked will also help when IO flow is troubleshooted - like reviewing performance counters or troubleshooting core functionality.
 
 Traditional stack compared to storage spaces stack (note that MPIO is missing, but for Storage Spaces Direct it's not needed as there is only one path to the physical device, so it was omitted)
