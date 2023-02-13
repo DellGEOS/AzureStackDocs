@@ -39,7 +39,7 @@ TOR Switches will be configured with Trunk and native (access) VLAN for manageme
 
 ![](04-Network-Architecture/media/topology04.png)
 
-> Note: Two subnet deployment is being now standard. Same approach is used when [NetworkATC](https://docs.microsoft.com/en-us/azure-stack/hci/deploy/network-atc) is deployed. 
+> Note: Two subnet deployment is being now standard. Same approach is used when [NetworkATC](https://docs.microsoft.com/en-us/azure-stack/hci/deploy/network-atc) is deployed.
 
 ### Direct connections (Switchless)
 
